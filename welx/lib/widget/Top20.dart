@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:lottie/lottie.dart';
 
 import '../Screens/Details_screen.dart';
@@ -36,43 +34,40 @@ class Top20 extends StatelessWidget {
                                 )),
                       );
                     },
-                    child: Hero(
-                      tag: snapshot.data['results'][index]['id'],
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Opacity(
-                          opacity: 0.7,
-                          child: SizedBox(
-                            width: 120,
-                            height: 100,
-                            child: ClipRRect(
-                                borderRadius: BorderRadius.circular(20),
-                                child: Image.network(
-                                    "https://image.tmdb.org/t/p/w500/${snapshot.data['results'][index]['poster_path']}",
-                                    fit: BoxFit.cover, frameBuilder: (context,
-                                        child, frame, wasSynchronouslyLoaded) {
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Opacity(
+                        opacity: 0.7,
+                        child: SizedBox(
+                          width: 120,
+                          height: 100,
+                          child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: Image.network(
+                                  "https://image.tmdb.org/t/p/w500/${snapshot.data['results'][index]['poster_path']}",
+                                  fit: BoxFit.cover, frameBuilder: (context,
+                                      child, frame, wasSynchronouslyLoaded) {
+                                return child;
+                              }, loadingBuilder:
+                                      (context, child, loadingProgress) {
+                                if (loadingProgress == null) {
                                   return child;
-                                }, loadingBuilder:
-                                        (context, child, loadingProgress) {
-                                  if (loadingProgress == null) {
-                                    return child;
-                                  } else {
-                                    return Center(
-                                      child: ColorFiltered(
-                                        colorFilter: const ColorFilter.mode(
-                                            Color.fromARGB(255, 244, 117, 54),
-                                            BlendMode
-                                                .srcIn), // Change the color here
-                                        child: Lottie.network(
-                                          'https://assets9.lottiefiles.com/packages/lf20_exi9acin.json', // Replace with the path to your JSON file
-                                          width: 200,
-                                          height: 150,
-                                        ),
+                                } else {
+                                  return Center(
+                                    child: ColorFiltered(
+                                      colorFilter: const ColorFilter.mode(
+                                          Color.fromARGB(255, 244, 117, 54),
+                                          BlendMode
+                                              .srcIn), // Change the color here
+                                      child: Lottie.network(
+                                        'https://assets9.lottiefiles.com/packages/lf20_exi9acin.json', // Replace with the path to your JSON file
+                                        width: 200,
+                                        height: 150,
                                       ),
-                                    );
-                                  }
-                                })),
-                          ),
+                                    ),
+                                  );
+                                }
+                              })),
                         ),
                       ),
                     ),

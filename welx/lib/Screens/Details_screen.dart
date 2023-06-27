@@ -1,71 +1,100 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
-import 'package:provider/provider.dart';
-import 'package:welx/class/Crud.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
-import '../Model/DetailsP.dart';
+import '../class/Crud.dart';
 
-class Deatails_Screen extends StatelessWidget {
-  const Deatails_Screen({super.key, required this.image, required this.i});
-  final String image;
+class Deatails_Screen extends StatefulWidget {
+  const Deatails_Screen({super.key, required this.i, required this.image});
   final int i;
+  final String image;
+
+  @override
+  State<Deatails_Screen> createState() => _Deatails_ScreenState();
+}
+
+Crud crud = Crud();
+
+class _Deatails_ScreenState extends State<Deatails_Screen> {
+  late YoutubePlayerController controller;
+  @override
+  getId(int id) async {
+    var res = await crud.getMovisee(
+        "https://api.themoviedb.org/3/movie/$id/videos?language=en-US");
+    setState(() {
+      controller = YoutubePlayerController(
+        initialVideoId: res["results"].isEmpty == false
+            ? res["results"][0]["key"]
+            : "hGOcFPzx1H0",
+        flags: const YoutubePlayerFlags(
+          forceHD: true,
+          controlsVisibleAtStart: true,
+          captionLanguage: "ar",
+          isLive: false,
+          autoPlay: true,
+        ),
+      );
+    });
+  }
+
+  @override
+  void initState() {
+    controller = YoutubePlayerController(
+        initialVideoId: "hGOcFPzx1H0",
+        flags: const YoutubePlayerFlags(
+          forceHD: true,
+          controlsVisibleAtStart: true,
+          captionLanguage: "ar",
+          isLive: false,
+          autoPlay: true,
+        ));
+    getId(widget.i);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final myNotifier = context.read<DetailsP>();
-      myNotifier.getId(i); // Call the function on initialization
-    });
-
-    print(i);
-    Crud crud = Crud();
     return Scaffold(
         appBar: AppBar(),
         body: FutureBuilder(
           future: crud.getMovisee(
-              "https://api.themoviedb.org/3/movie/$i?language=en-US"),
+              "https://api.themoviedb.org/3/movie/${widget.i}?language=en-US"),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return ListView(children: [
-                Hero(
-                    tag: i,
-                    child: Container(
-                      height: 400,
-                      width: MediaQuery.of(context).size.width,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20)),
-                      child: Opacity(
-                          opacity: 0.5,
+                Container(
+                  height: 400,
+                  width: MediaQuery.of(context).size.width,
+                  decoration:
+                      BoxDecoration(borderRadius: BorderRadius.circular(20)),
+                  child: Opacity(
+                      opacity: 0.5,
+                      child: Padding(
+                          padding: const EdgeInsets.all(8.0),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child:
-                                Consumer<DetailsP>(builder: (context, data, _) {
-                              return Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: Transform.scale(
-                                    scale: 2,
-                                    child: YoutubePlayer(
-                                      controller: data.controller!,
-                                      showVideoProgressIndicator: false,
-                                      progressIndicatorColor: Colors.blueAccent,
-                                      progressColors: const ProgressBarColors(
-                                          bufferedColor: Colors.red,
-                                          playedColor: Colors.blueAccent,
-                                          handleColor: Colors.blueAccent,
-                                          backgroundColor: Colors.red),
-                                      onReady: () {
-                                        // Perform any necessary actions when the player is ready.
-                                      },
-                                    ),
-                                  ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: Transform.scale(
+                                scale: 2,
+                                child: YoutubePlayer(
+                                  controller: controller,
+                                  showVideoProgressIndicator: false,
+                                  progressIndicatorColor: Colors.blueAccent,
+                                  progressColors: const ProgressBarColors(
+                                      bufferedColor: Colors.red,
+                                      playedColor: Colors.blueAccent,
+                                      handleColor: Colors.blueAccent,
+                                      backgroundColor: Colors.red),
+                                  onReady: () {
+                                    // Perform any necessary actions when the player is ready.
+                                  },
                                 ),
-                              );
-                            }),
-                          )),
-                    )),
+                              ),
+                            ),
+                          ))),
+                ),
                 Center(
                   child: Text(
                     "${snapshot.data["original_title"]}",
